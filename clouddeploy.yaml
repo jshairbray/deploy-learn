@@ -15,3 +15,8 @@ description: Production Cloud Run service
 requireApproval: true
 run:
   location: projects/my-generic-project-504019/locations/us-central1
+executionConfigs:
+- usages:
+  - RENDER
+  - DEPLOY
+  serviceAccount: deploy-learn-deploy-sa@my-generic-project-504019.iam.gserviceaccount.com
