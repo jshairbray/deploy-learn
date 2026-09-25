@@ -1,0 +1,37 @@
+steps:
+# 1. Build the image with Google's buildpacks (no Dockerfile needed)
+- id: Build
+  name: gcr.io/k8s-skaffold/pack
+  entrypoint: pack
+  args:
+  - build
+  - $_IMAGE:$COMMIT_SHA
+  - --builder=gcr.io/buildpacks/builder:latest
+  - --network=cloudbuild
+  - --path=.
+
+# 2. Push the image to Artifact Registry
+- id: Push
+  name: gcr.io/cloud-builders/docker
+  args:
+  - push
+  - $_IMAGE:$COMMIT_SHA
+
+# 3. Create a Cloud Deploy release (waits for approval, doesn't deploy)
+- id: CreateRelease
+  name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  entrypoint: gcloud
+  args:
+  - deploy
+  - releases
+  - create
+  - release-$SHORT_SHA
+  - --delivery-pipeline=deploy-learn-pipeline
+  - --region=us-central1
+  - --images=deploy-learn-image=$_IMAGE:$COMMIT_SHA
+
+substitutions:
+  _IMAGE: us-central1-docker.pkg.dev/my-generic-project-504019/cloud-run-source-deploy/deploy-learn
+
+options:
+  logging: CLOUD_LOGGING_ONLY
