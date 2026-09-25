@@ -1,0 +1,17 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: deploy-learn-pipeline
+description: Build-then-approve pipeline for deploy-learn
+serialPipeline:
+  stages:
+  - targetId: deploy-learn-prod
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: deploy-learn-prod
+description: Production Cloud Run service
+requireApproval: true
+run:
+  location: projects/my-generic-project-504019/locations/us-central1
